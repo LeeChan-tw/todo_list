@@ -15,8 +15,15 @@ db.once('open', () => {
   console.log('mongodb connected!')  
 })
 
+//啟用Handlebars
+const exphbs = require('express-handlebars')
+app.engine('hbs', exphbs({ defaultLayout: 'main', extname: '.hbs' }))
+app.set('view engine', 'hbs')
+
+//設定路由
+//Todo 首頁
 app.get('/', (req, res) => {
-  res.send('Hello, world!')
+  res.render('index')
 })
 
 app.listen(port, () => {
