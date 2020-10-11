@@ -1,8 +1,5 @@
-const express = require('express')
-//執行express()，得到一個伺服器
-const app = express()
-const port = 3000
 const mongoose =require('mongoose')
+const Todo = require('../todo')
 mongoose.connect('mongodb://localhost/todo_list', { useNewUrlParser: true, useUnifiedTopology: true })
 //取得資料庫連線狀態
 const db = mongoose.connection
@@ -12,13 +9,9 @@ db.on('error', () => {
 })
 //連線成功
 db.once('open', () => {
-  console.log('mongodb connected!')  
-})
-
-app.get('/', (req, res) => {
-  res.send('Hello, world!')
-})
-
-app.listen(port, () => {
-  console.log(`Express is listening on http://localhost:${port}!`)
+  console.log('mongodb connected!')
+  for (let i = 0; i < 10; i++) {
+    Todo.create({ name: 'name-' + i })
+  } 
+  console.log('done')
 })
