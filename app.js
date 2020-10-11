@@ -1,14 +1,18 @@
 const express = require('express')
+const mongoose =require('mongoose')
+const port = 3000
+const exphbs = require('express-handlebars')
+const bodyParser = require('body-parser')
+//載入 Todo model
+const Todo = require('./models/todo') 
 //執行express()，得到一個伺服器
 const app = express()
-const port = 3000
 
-const mongoose =require('mongoose')
 mongoose.connect('mongodb://localhost/todo_list', { useNewUrlParser: true, useUnifiedTopology: true })
 
-const Todo = require('./models/todo') //  載入 Todo model
 
-const exphbs = require('express-handlebars')
+
+const { urlencoded } = require('body-parser')
 
 //取得資料庫連線狀態
 const db = mongoose.connection
@@ -26,6 +30,10 @@ db.once('open', () => {
 app.engine('hbs', exphbs({ defaultLayout: 'main', extname: '.hbs' }))
 app.set('view engine', 'hbs')
 
+//啟用body-parser
+app.use(bodyParser.urlencoded({ extended: true }))
+
+
 //設定路由
 //Todo 首頁
 app.get('/', (req, res) => {    
@@ -34,6 +42,18 @@ app.get('/', (req, res) => {
     .then(todos => res.render('index', { todos})) // 將資料傳到 index 樣板
     .catch(error => console.error(error))
   
+})
+
+app.get('/todos/new', (req, res) => {
+  return res.render('new')
+})
+
+app.post('/todos', (req, res) => {
+  const name = req.body.name
+  
+  return Todo.create({ name })
+      .then(() => res.redirect('/'))
+      .catch(error => console.error(error))
 })
 
 app.listen(port, () => {
