@@ -35,6 +35,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.get('/', (req, res) => {
   Todo.find() // 取出 Todo model 裡面所有資料
     .lean() // 把 Mongoose 的 model 物件轉會成乾淨的 JavaScript 資料陣列
+    .sort({ _id: 'asc' }) // 根據 _id升冪排序
     .then(todos => res.render('index', { todos })) // 將資料傳到 index 樣板
     .catch(error => console.error(error))
 })
