@@ -4,6 +4,7 @@ const port = 3000
 const exphbs = require('express-handlebars')
 const bodyParser = require('body-parser')
 // 載入 Todo model
+const methodOverride = require('method-override')
 const Todo = require('./models/todo')
 const todo = require('./models/todo')
 // 執行express()，得到一個伺服器
@@ -29,6 +30,7 @@ app.set('view engine', 'hbs')
 
 // 啟用body-parser
 app.use(bodyParser.urlencoded({ extended: true }))
+app.use(methodOverride('_method'))
 
 // 設定路由
 // Todo首頁
@@ -67,7 +69,7 @@ app.get('/todos/:id/edit', (req, res) => {
     .catch(error => console.error(error))
 })
 
-app.post('/todos/:id/edit', (req, res) => {
+app.put('/todos/:id', (req, res) => {
   const id = req.params.id
   const { name, isDone } = req.body
   return Todo.findById(id)
@@ -80,7 +82,7 @@ app.post('/todos/:id/edit', (req, res) => {
     .catch(error => console.error(error))
 })
 
-app.post('/todos/:id/delete', (req, res) => {
+app.delete('/todos/:id', (req, res) => {
   const id = req.params.id
   return Todo.findById(id)
     .then(todo => { todo.remove() })
