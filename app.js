@@ -3,10 +3,11 @@ const mongoose = require('mongoose')
 const port = 3000
 const exphbs = require('express-handlebars')
 const bodyParser = require('body-parser')
+const routes = require('./routes')
 // 載入 Todo model
 const methodOverride = require('method-override')
 const Todo = require('./models/todo')
-const todo = require('./models/todo')
+
 // 執行express()，得到一個伺服器
 const app = express()
 
@@ -33,62 +34,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(methodOverride('_method'))
 
 // 設定路由
-// Todo首頁
-app.get('/', (req, res) => {
-  Todo.find() // 取出 Todo model 裡面所有資料
-    .lean() // 把 Mongoose 的 model 物件轉會成乾淨的 JavaScript 資料陣列
-    .sort({ _id: 'asc' }) // 根據 _id升冪排序
-    .then(todos => res.render('index', { todos })) // 將資料傳到 index 樣板
-    .catch(error => console.error(error))
-})
-
-app.get('/todos/new', (req, res) => {
-  return res.render('new')
-})
-
-app.post('/todos', (req, res) => {
-  const name = req.body.name
-  return Todo.create({ name })
-    .then(() => res.redirect('/'))
-    .catch(error => console.error(error))
-})
-
-app.get('/todos/:id', (req, res) => {
-  const id = req.params.id
-  return Todo.findById(id)
-    .lean()
-    .then((todo) => res.render('detail', { todo }))
-    .catch(error => console.error(error))
-})
-
-app.get('/todos/:id/edit', (req, res) => {
-  const id = req.params.id
-  return Todo.findById(id)
-    .lean()
-    .then((todo) => res.render('edit', { todo }))
-    .catch(error => console.error(error))
-})
-
-app.put('/todos/:id', (req, res) => {
-  const id = req.params.id
-  const { name, isDone } = req.body
-  return Todo.findById(id)
-    .then(todo => {
-      todo.name = name
-      todo.isDone = isDone === 'on'
-      return todo.save()
-    })
-    .then(() => res.redirect(`/todos/${id}`))
-    .catch(error => console.error(error))
-})
-
-app.delete('/todos/:id', (req, res) => {
-  const id = req.params.id
-  return Todo.findById(id)
-    .then(todo => { todo.remove() })
-    .then(() => res.redirect('/'))
-    .catch(error => console.error(error))
-})
+app.use(routes)
 
 app.listen(port, () => {
   console.log(`Express is listening on http://localhost:${port}`)
